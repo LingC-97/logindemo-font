@@ -16,47 +16,49 @@
 </template>
 
 <script>
+import  qs from 'qs'
 export default {
   data () {
     return {
       form: {
         username: '',
-        password: ''  
+        password: ''
       },
       isnull: false
     };
   },
- 
+
   methods: {
     register() {
-      if(this.form.username == '') {
+      if (this.form.username == '') {
         this.$message.error('用户名不能为空');
-      }else if(this.form.password == '') {
+      } else if (this.form.password == '') {
         this.$message.error('密码不能为空');
-      }else{
-        this.axios.post('/register', {
-          params: {
+      } else {
+        this.axios({
+          method: "POST",
+          url: '/user/register',
+          data: qs.stringify({
             name: this.form.username,
             password: this.form.password
-          }
+          }),
         }).then(res => {
-          // console.log(res.data.message);
-          if(res.data.status == 200) {
+          if (res.data.code == 1000) {
             this.$alert('是否返回登录页面', '注册成功', {
               confirmButtonText: '确定',
               callback: action => {
                 this.$router.push('/login')
               }
             })
-          }else if(res.data.status == 202) {
+          } else if (res.data.code == 1001) {
             this.$alert('用户名已存在', '注册失败', {
               confirmButtonText: '确定',
               callback: action => {
                 this.form.username = '',
-                this.form.password = ''
+                    this.form.password = ''
               }
             })
-          }else{
+          } else {
             console.log(res.message);
           }
         }).catch(err => {
@@ -66,6 +68,11 @@ export default {
     }
   }
 }
+
+
+
+
+
 </script>
 
 <style scoped>

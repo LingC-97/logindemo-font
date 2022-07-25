@@ -17,35 +17,35 @@
 </template>
 
 <script>
+import qs from 'qs';
 export default {
   data () {
     return {
       form: {
         username: '',
-        password: ''  
-      }
+        password: ''
+      },
     };
   },
 
   methods: {
-    login() {
+    login(){
       if(this.form.username == '') {
         this.$message.error('用户名不能为空');
       }else if(this.form.password == '') {
         this.$message.error('密码不能为空');
       }else{
-        this.axios.get('/login', {
-          params: {
-            name: this.form.username,
-            password: this.form.password
-          }
+        this.axios({
+          method:"POST",
+          url:'/user/login',
+          data:qs.stringify({
+            name:this.form.username,
+            password:this.form.password
+          }),
         }).then(res=>{
-          if(res.data.status == 200) {
+          if(res.data.code === 1000) {
             this.$router.push({
               path: '/home',
-              query: {
-                name: this.form.username
-              }
             })
           }else{
             this.$alert('用户名或密码错误', '登录失败', {
@@ -57,9 +57,10 @@ export default {
             });
           }
         }).catch(err=>{
-            console.log("登录失败" + err);
+          console.log("登录失败" + err);
+
         })
-      }
+    }
     },
     register() {
       this.$router.push('/register')
